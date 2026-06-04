@@ -1,0 +1,18 @@
+# Foundry
+out/
+cache/
+broadcast/
+
+# Dependencies
+lib/
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# School 合约 (不提交)
+src/School.sol
+src/SchoolV2.sol
+test/School.t.sol
+test/SchoolV2.t.sol
