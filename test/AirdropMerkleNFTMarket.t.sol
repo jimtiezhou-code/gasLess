@@ -412,7 +412,10 @@ contract AirdropMerkleNFTMarketTest is Test {
 
     function test_SetMerkleRoot_RevertNotOwner() public {
         vm.prank(alice);
-        vm.expectRevert("Market: not owner");
+        // OZ Ownable 抛出 OwnableUnauthorizedAccount(account) 自定义错误
+        vm.expectRevert(
+            abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", alice)
+        );
         market.setMerkleRoot(bytes32(uint256(0xDEAD)));
     }
 }
