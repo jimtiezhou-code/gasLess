@@ -48,6 +48,64 @@ contract MockNFT {
     }
 
     // ============================
+    // APPROVE (ERC-721 standard)
+    // ============================
+
+    mapping(uint256 => address) private _tokenApprovals;
+    mapping(address => mapping(address => bool)) private _operatorApprovals;
+
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+    function approve(address to, uint256 tokenId) external {
+        require(_ownerOf[tokenId] == msg.sender, "Not owner");
+        _tokenApprovals[tokenId] = to;
+        emit Approval(msg.sender, to, tokenId);
+    }
+
+    function getApproved(uint256 tokenId) external view returns (address) {
+        return _tokenApprovals[tokenId];
+    }
+
+    function setApprovalForAll(address operator, bool approved) external {
+        _operatorApprovals[msg.sender][operator] = approved;
+        emit ApprovalForAll(msg.sender, operator, approved);
+    }
+
+    function isApprovedForAll(address owner, address operator) external view returns (bool) {
+        return _operatorApprovals[owner][operator];
+    }
+
+    // ============================
+    // TRANSFER (ERC-721 standard)
+    // ============================
+
+    function transferFrom(address from, address to, uint256 tokenId) external {
+        _transfer(from, to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId) external {
+        _transfer(from, to, tokenId);
+    }
+
+    function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata) external {
+        _transfer(from, to, tokenId);
+    }
+
+    function _transfer(address from, address to, uint256 tokenId) internal {
+        require(_ownerOf[tokenId] == from, "Not owner");
+        require(
+            msg.sender == from || msg.sender == _tokenApprovals[tokenId] || _operatorApprovals[from][msg.sender],
+            "Not approved"
+        );
+        _ownerOf[tokenId] = to;
+        _balanceOf[from]--;
+        _balanceOf[to]++;
+        delete _tokenApprovals[tokenId];
+        emit Transfer(from, to, tokenId);
+    }
+
+    // ============================
     // QUERY
     // ============================
 
